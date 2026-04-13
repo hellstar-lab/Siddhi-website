@@ -328,7 +328,10 @@ export default function CheckoutModal() {
       special_note: item.instruction?.trim() || undefined,
     }))
 
-    const apiOrderType = freshOrderType === 'delivery' ? 'delivery' : 'pickup'
+    const apiOrderType: 'pickup' | 'delivery' | 'dine_in' =
+      freshOrderType === 'delivery' ? 'delivery'
+      : freshOrderType === 'dine-in' ? 'dine_in'
+      : 'pickup'
 
     // Fix #8: Validate the table number against the API to obtain the real UUID.
     // tableNumber in the store is a display string (e.g. "3"); the backend expects

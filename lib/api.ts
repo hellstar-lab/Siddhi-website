@@ -15,9 +15,11 @@ async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
   })
   const json = await res.json()
   if (!res.ok) {
-    // Backend may use .message, .error, or .detail (FastAPI/Django style)
-    const msg = json.message ?? json.error ?? json.detail ?? `Request failed: ${res.status}`
-    throw new Error(msg)
+    // Surface the most specific error available from the backend
+    const primary = json.message ?? json.error ?? json.detail ?? `Request failed: ${res.status}`
+    const extra = json.error && json.message && json.error !== json.message ? ` (${json.error})` : ''
+    const hint = json.hint ? ` Hint: ${json.hint}` : ''
+    throw new Error(`${primary}${extra}${hint}`)
   }
   return json
 }
@@ -145,7 +147,7 @@ export interface OrderItem {
 }
 
 export interface PlaceOrderPayload {
-  order_type: 'pickup' | 'delivery'
+  order_type: 'pickup' | 'delivery' | 'dine_in'
   table_id?: string | null
   customer_name: string
   customer_phone: string
