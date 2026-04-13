@@ -155,6 +155,7 @@ export interface PlaceOrderPayload {
   items: OrderItem[]
   coupon_code?: string
   special_instructions?: string
+  payment_method?: 'cod' | 'online' | null
 }
 
 export interface PlacedOrder {

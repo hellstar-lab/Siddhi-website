@@ -368,6 +368,7 @@ export default function CheckoutModal() {
           : undefined,
         items: apiItems,
         coupon_code: appliedCoupon || undefined,
+        payment_method: payment,
       })
       setPlacedOrder(placed)
       clearCart()
@@ -440,12 +441,16 @@ export default function CheckoutModal() {
   }
 
   const currentStatus = trackData?.status ?? placedOrder?.status ?? 'requested'
-  const statusInfo = STATUS_INFO[currentStatus] ?? STATUS_INFO.requested
-  const isTerminal = ['delivered', 'cancelled', 'rejected'].includes(currentStatus)
-
   const displayOrderType = step === 'tracking' ? snapshotOrderType : orderType
   const displayTableNumber = step === 'tracking' ? snapshotTableNumber : tableNumber
   const displayPayment = step === 'tracking' ? snapshotPayment : payment
+
+  const baseStatusInfo = STATUS_INFO[currentStatus] ?? STATUS_INFO.requested
+  const statusInfo = (currentStatus === 'payment_pending' && displayPayment === 'cod')
+    ? { ...baseStatusInfo, label: 'Order Approved', sub: 'The restaurant has approved your order. Preparing to cook!' }
+    : baseStatusInfo
+
+  const isTerminal = ['delivered', 'cancelled', 'rejected'].includes(currentStatus)
 
   // Fix #14: use CHECKOUT_STEPS constant for step indicator math
   const checkoutStepIndex = CHECKOUT_STEPS.indexOf(step as Step)
